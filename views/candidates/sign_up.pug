@@ -1,0 +1,43 @@
+extends ../layout
+
+block content 
+    body 
+        div(class="container p-3")
+            h1 Sign Up as Candidate
+            hr 
+            div(class="row")
+                div(class="col-sm-2")
+                    p First Name 
+                    input(class="form-control",type="text")
+                    div(class="row mt-3")
+                        div(class="col-sm-2 mt-2")
+                            p Age
+                        div(class="col-sm-4")
+                            input(class="form-control",type="text")
+                        div(class="col-sm-6")
+                            select(class="form-select",aria-label="Default select example")
+                                option(selected) Sex
+                                option(value="M") M
+                                option(value="F") F
+                    div(class="row mt-3")
+                        div(class="col-sm-4")
+                            p Area Code
+                        div(class="col-sm-8 mt-2")
+                            select(class="form-select",aria-label="Default select example")
+                                option(selected) bg26
+                                option(value="14") bg14
+                                option(value="12") bg12 
+
+                div(class="col-sm-2")
+                    p Second Name 
+                    input(class="form-control",type="text")
+                    div(class="row mt-3")
+                        div(class="col")
+                            p Phone Number
+                            input(class="form-control",type="phone")
+            div(class="row mt-3")
+                p Address
+                div(class="col-sm-4") 
+                    textarea(class="form-control",rows="3")
+                
+

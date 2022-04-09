@@ -1,0 +1,47 @@
+extends ../layout
+
+block content 
+    body
+        nav(class="navbar navbar-expand-lg navbar-dark bg-dark")
+            div(class="col")
+                    a(class="p-3 navbar-brand",href="#") Vote your candidate
+                    button(class="navbar-toggler",type="button",data-bs-toggle="collapse",data-bs-target="#navbarSupportedContent",aria-controls="navbarSupportedContent",aria-expanded="false",aria-label="Toggle navigation")
+                        span(class="navbar-toggler-icon")
+            div(class="p-2 col-xl-0")
+                a(class="btn btn-outline-danger mr-2") Logout 
+
+        div(class="container")
+            div(class="row")
+                div(class="col mt-3")
+                    h1 Candidate List
+                div(class="col-xl-2 mt-4")
+                    p Area Code: 
+                        b bg14
+            hr
+            div(class="mx-auto col-sm-7 text-center p-2")
+                div(class="row p-2") 
+                    div(class="card border-primary")
+                        div(class="card-body")
+                            div(class="row")
+                                div(class="col")
+                                    h5(class="card-title") Abhishek Mudaliar
+                                div(class="col-xl-1 ")
+                                    a(class="btn btn-primary mr-2") Vote
+                div(class="row p-2") 
+                    div(class="card border-primary")
+                            div(class="card-body")
+                                div(class="row")
+                                    div(class="col")
+                                        h5(class="card-title") Tejas Jaiwant 
+                                    div(class="col-xl-1 ")
+                                        a(class="btn btn-primary") Vote
+                div(class="row p-2") 
+                    div(class="card border-primary")
+                            div(class="card-body")
+                                div(class="row")
+                                    div(class="col")
+                                        h5(class="card-title") Aniruddha Rao 
+                                    div(class="col-xl-1 ")
+                                        a(class="btn btn-primary") Vote   
+
+
