@@ -6,7 +6,8 @@ const morgan = require('morgan');
 const path = require('path');
 //routes
 const voterRoutes = require('./routes/voters');
-const candidateRouter = require('./routes/candidates')
+const candidateRouter = require('./routes/candidates');
+const adminRouter = require('./routes/admin');
 app.use(express.json());
 app.use(express.urlencoded({ extended:false }));
 app.use(cookieParser());
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/voters/',voterRoutes);
 app.use('/candidates/',candidateRouter);
+app.use('/admin/',adminRouter);
 
 app.listen(port, () => {
   console.log(`Voting Website listening on port ${port}`)
