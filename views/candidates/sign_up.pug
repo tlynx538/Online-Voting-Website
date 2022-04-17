@@ -4,57 +4,60 @@ block content
     body 
         div(class="container p-3")
             h1 Sign Up as Candidate 
-            hr 
-            div(class="row p-3")
-                div(class="border col-md-6 p-3")
-                    div(class="row")
-                        div(class="col")
-                            p First Name 
-                            input(class="form-control",type="text")
-                            p(class="mt-3") Second Name 
-                            input(class="form-control",type="text")
-                            div(class="row mt-3")
-                                div(class="col-sm-2 mt-3")
-                                    p Age
-                                div(class="col-sm-3 mt-2")
-                                    input(class="form-control",type="text")
-                                div(class="col-sm-2 mt-3")
-                                    p Sex
-                                div(class="col-sm-3 mt-2")
-                                    select(class="form-select",aria-label="Default select example")
-                                        option(value="M") Male
-                                        option(value="F") Female
-                            div(class="row mt-3")
-                                div(class="col-sm-2")
-                                    p Choose Party
-                                div(class="col-sm-3")
-                                    select(class="form-select", aria-label="Default select example")
-                                        option(selected) BJP 
-                                        option(value="cong") Congress 
-                                        option(value="aap") AAP  
-                                div(class="col-sm-2 mt-2")
-                                    p Area Code
-                                div(class="col-sm-4")
-                                    select(class="form-select",aria-label="Default select example")
-                                        option(selected) bg26
-                                        option(value="14") bg14
-                                        option(value="12") bg12
-                    div(class="row mt-3")
-                        div(class="row mt-3")
+            hr
+            form(method="POST",action="/candidates/signup",class="form-signup") 
+                div(class="row p-3")
+                    div(class="border col-md-6 p-3")
+                        div(class="row")
                             div(class="col")
-                                p Phone Number
-                                input(class="form-control",type="phone")
+                                p First Name 
+                                input(class="form-control",type="text",name="candidate_fname")
+                                p(class="mt-3") Second Name 
+                                input(class="form-control",type="text",name="candidate_lname")
+                                div(class="row mt-3")
+                                    div(class="col-sm-2 mt-3")
+                                        p Age
+                                    div(class="col-sm-3 mt-2")
+                                        input(class="form-control",type="text",name="candidate_age")
+                                    div(class="col-sm-2 mt-3")
+                                        p Sex
+                                    div(class="col-sm-3 mt-2")
+                                        select(class="form-select",aria-label="Default select example",name="candidate_sex")
+                                            option(value="M") Male
+                                            option(value="F") Female
+                                div(class="row mt-3")
+                                    div(class="col-sm-2")
+                                        p Choose Party
+                                    div(class="col-sm-3")
+                                        select(class="form-select", aria-label="Default select example",name="candidate_party_id")
+                                            option(selected) 
+                                                div(class="text-muted") -
+                                            each item in party 
+                                                option(value=item.party_id) #{item.party_name}
+                                    div(class="col-sm-2 mt-2")
+                                        p Area Code
+                                    div(class="col-sm-4")
+                                        select(class="form-select",aria-label="Default select example",name="candidate_area_code_id")
+                                            option(selected) 
+                                                div(class="text-muted") -
+                                            each item in area
+                                                option(value=item.area_code_id) #{item.area_code_name}
+                        div(class="row mt-3")
+                            div(class="row mt-3")
+                                div(class="col")
+                                    p Phone Number
+                                    input(class="form-control",type="phone",name="candidate_phone")
 
-                                p(class="mt-3") Address
-                                textarea(class="form-control",rows="3")
+                                    p(class="mt-3") Address
+                                    textarea(class="form-control",rows="3",name="candidate_address")
 
-                    div(class="col mt-3")
-                            a(class="btn btn-primary me-2") Sign Up
-                            a(class="btn btn-warning",href="/") Return to Home    
+                        div(class="col mt-3")
+                                button(class="btn btn-primary me-2",type="submit") Sign Up
+                                a(class="btn btn-warning",href="/") Return to Home    
+                        
+                    //- div(class="col-md-1")
+                    //-     div(style="border-left:1px solid #000;height:500px")
+                    div(class="col")
+                            img(class="mt-5",src="/public/candidate.jpeg")
                     
-                //- div(class="col-md-1")
-                //-     div(style="border-left:1px solid #000;height:500px")
-                div(class="col")
-                        img(class="mt-5",src="/public/candidate.jpeg")
-                
 
