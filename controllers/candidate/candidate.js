@@ -1,4 +1,5 @@
 const db = require('../../knex/knex');
+var localSessionId;
 const getSignUp = async (req,res) => {
     const party_details = await retrieveAllPartyNames();
     const area_details = await retrieveAllAreaCodes();
@@ -29,10 +30,27 @@ const postSignUp = async(req,res) => {
 }
 
 const postSignIn = async(req,res) => {
-    res.send("Login Successful.");
+    console.log(req.body);
+    const userDetails = await retrieveUserDetails();
+    for(var element in userDetails)
+    {
+        if(userDetails[element].candidate_username == req.body.candidateUserName)
+        {
+            if(userDetails[element].candidate_password == req.body.candidatePassword)
+            {
+                res.render('../views/candidates/candidate_page',{candidate_fname:userDetails[element].candidate_fname,candidate_lname:userDetails[element].candidate_lname});
+            }
+            else 
+            {
+                res.render('../views/index.pug');
+            }
+        }
+        else 
+            res.render('../views/index.pug');
+    }
 }
 
-module.exports = {getSignUp,postSignUp};
+module.exports = {getSignUp,postSignUp,postSignIn};
 
 
 const retrieveAllPartyNames = async (req,res) => {
@@ -43,4 +61,9 @@ const retrieveAllPartyNames = async (req,res) => {
 const retrieveAllAreaCodes = async(req,res) => {
     const area_code_details = await db('area_codes').select('area_code_id','area_code_name');
     return area_code_details;
+}
+
+const retrieveUserDetails = async(req,res) => {
+    const userDetails = await db('candidate').select('candidate_username','candidate_password','candidate_fname','candidate_lname');
+    return userDetails;
 }
