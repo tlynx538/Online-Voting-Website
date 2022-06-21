@@ -1,5 +1,4 @@
 const db = require('../../knex/knex');
-var localSessionId;
 const getSignUp = async (req,res) => {
     const party_details = await retrieveAllPartyNames();
     const area_details = await retrieveAllAreaCodes();
@@ -38,11 +37,12 @@ const postSignIn = async(req,res) => {
         {
             if(userDetails[element].candidate_password == req.body.candidatePassword)
             {
+                req.session.user = userDetails[element].candidate_id;
                 res.render('../views/candidates/candidate_page',{candidate_fname:userDetails[element].candidate_fname,candidate_lname:userDetails[element].candidate_lname});
             }
             else 
             {
-                res.render('../views/index.pug');
+                res.status(403).render('../views/index.pug',{errors: "Username or Password seems to be incorrect, please check once."});
             }
         }
         else 
@@ -50,8 +50,19 @@ const postSignIn = async(req,res) => {
     }
 }
 
-module.exports = {getSignUp,postSignUp,postSignIn};
-
+const logout = (req,res) => {
+    req.session.destroy((err)=>{
+        if(err)
+        {
+          console.log(err);
+        }
+        else 
+        {           
+          res.redirect('/');
+        }
+      });
+}
+module.exports = {getSignUp,postSignUp,postSignIn,logout};
 
 const retrieveAllPartyNames = async (req,res) => {
     const party_details = await db('party').select('party_id','party_name');
@@ -64,6 +75,6 @@ const retrieveAllAreaCodes = async(req,res) => {
 }
 
 const retrieveUserDetails = async(req,res) => {
-    const userDetails = await db('candidate').select('candidate_username','candidate_password','candidate_fname','candidate_lname');
+    const userDetails = await db('candidate').select('candidate_id','candidate_username','candidate_password','candidate_fname','candidate_lname');
     return userDetails;
 }

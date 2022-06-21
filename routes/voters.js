@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const express = require('express');
 const voterControllers = require('../controllers/voters/voters');
-router.get('/signup',voterControllers.signUp);
-router.get('/vote',voterControllers.vote);
-// temporary route
-//router.get('/error',voterControllers.voted_already);
+router.get('/signup',voterControllers.getSignUp);
+router.post('/signup',voterControllers.postSignUp);
+router.get('/vote',voterControllers.getVote);
+router.post('/signin',voterControllers.signIn);
+router.get('/logout',voterControllers.logout);
+router.get('/vote/:candidate_id',voterControllers.getVote);
 module.exports = router;
