@@ -201,20 +201,35 @@
 											"top": 323,
 											"width": 246.85888671875,
 											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAGBhN7hVG4z8w8=",
+											"_parent": {
+												"$ref": "AAAAAAGAHJObtJcbeg4="
+											},
+											"model": {
+												"$ref": "AAAAAAGBhN7hL24w5A0="
+											},
+											"font": "Arial;13;0",
+											"left": 117,
+											"top": 338,
+											"width": 246.85888671875,
+											"height": 13
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 112,
 									"top": 183,
 									"width": 256.85888671875,
-									"height": 158
+									"height": 173
 								}
 							],
 							"font": "Arial;13;0",
 							"left": 112,
 							"top": 160,
 							"width": 256.85888671875,
-							"height": 181,
+							"height": 209,
 							"nameLabel": {
 								"$ref": "AAAAAAGAHJObtJcaivg="
 							},
@@ -610,6 +625,7 @@
 											"model": {
 												"$ref": "AAAAAAGAHKHD/JhbGUU="
 											},
+											"visible": false,
 											"font": "Arial;13;0",
 											"left": 365,
 											"top": 512,
@@ -621,7 +637,7 @@
 									"left": 360,
 									"top": 447,
 									"width": 200,
-									"height": 83
+									"height": 68
 								}
 							],
 							"font": "Arial;13;0",
@@ -826,6 +842,15 @@
 								"$ref": "AAAAAAGAHJObtJcXDVQ="
 							},
 							"name": "candidate_password",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAGBhN7hL24w5A0=",
+							"_parent": {
+								"$ref": "AAAAAAGAHJObtJcXDVQ="
+							},
+							"name": "allow_vote",
 							"length": 0
 						}
 					]

@@ -15,7 +15,8 @@ const postSignUp = async(req,res) => {
             voter_area_code_id: req.body.voter_area_code_id,
             voter_phone:  req.body.voter_phone,
             voter_sex: req.body.voter_sex,
-            has_voted : false 
+            has_voted : false,
+            allow_vote : false  
         }).returning("*");
         console.log(results);
     }
@@ -27,24 +28,32 @@ const postSignUp = async(req,res) => {
     res.send("Data submitted successfully");
 }
 const getVote = async(req,res) => {
-    // retrieve candidate id [v]
-    console.log(req.params.candidate_id);
-    console.log(req.session.user);
-    // add vote to voting record [v]
-    // needs try/catch
-    const results = await db('voting_record').insert({
-        time_of_vote: new Date(),
-        voter_id : req.session.user,
-        candidate_id : req.params.candidate_id
-    }).returning('*');
-    // update has_voted in voter
-    const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
-    console.log(result2);
-    // redirect to already voted page or error.pug 
-    res.render('../views/voters/error.pug');
+    // check if election is active 
+    const result = await db('election_record').select('is_active');
+    if(result[0].is_active)
+    {
+        // retrieve candidate id [v]
+        console.log(req.params.candidate_id);
+        console.log(req.session.user);
+        // add vote to voting record [v]
+        // needs try/catch
+        const results = await db('voting_record').insert({
+            time_of_vote: new Date(),
+            voter_id : req.session.user,
+            candidate_id : req.params.candidate_id,
+            record_id : 1
+        }).returning('*');
+        // update has_voted in voter
+        const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
+        console.log(result2);
+        // redirect to already voted page or error.pug 
+        res.render('../views/voters/error.pug',{message: "You've already voted"});
+    }
+    else 
+    res.render('../views/voters/error.pug',{message: "The election is inactive"});
 }
 const signIn = async(req,res) => {
-    console.log(req.body);
+    var flag = true;
     const userDetails = await retrieveVoterDetails();
     const candidateDetails = await retrieveAllCandidates();
     for(var element in userDetails)
@@ -53,24 +62,39 @@ const signIn = async(req,res) => {
         {
             if(userDetails[element].voter_password == req.body.voterPassword)
             {
+                console.log("inside the main condition")
                 req.session.user = userDetails[element].voter_id;
                 area_code_local = await retrieveAreaCodebyId(userDetails[element].voter_area_code_id);
+                console.log("reached here 1");
                 if(await hasVoted(req.session.user))
-                    res.render('../views/voters/error.pug');
+                {
+                    console.log("reached here 2");
+                    flag = false;
+                    res.render('../views/voters/error.pug',{message: "You've already voted"});
+                }
                 else 
                 {
-                    console.log("candidate details: ");
-                    console.log(candidateDetails);
-                    res.render('../views/voters/voting_page',{area_code_name: area_code_local, candidate_details: candidateDetails});
+                    console.log("reached here 3")
+                    try 
+                    {
+                        console.log("candidate details: ");
+                        console.log(candidateDetails);
+                        flag = false;
+                        res.render('../views/voters/voting_page',{area_code_name: area_code_local, candidate_details: candidateDetails});
+                    }
+                    catch(err)
+                    {
+                        console.log(err);
+                        res.send("Some error detected");
+                    }
+
                 }
             }
-            else 
-            {
-                res.status(403).render('../views/index.pug',{errors: "Username or Password seems to be incorrect, please check once."});
-            }
         }
-        else 
-            res.render('../views/index.pug');
+    }
+    if(flag)
+    {
+        res.status(403).render('../views/index.pug',{errors: "Username or Password seems to be incorrect, please check once."});
     }
 }
 
@@ -95,7 +119,7 @@ const retrieveAreaCodebyId = async(area_code_id) => {
 }
 const retrieveAllAreaCodes = async() => {
     const area_code_details = await db('area_codes').select('area_code_id','area_code_name');
-    return area_code_details[0].area_code_name;
+    return area_code_details;
 }
 
 const retrieveVoterDetails = async() => {
@@ -104,7 +128,7 @@ const retrieveVoterDetails = async() => {
 }
 
 const retrieveAllCandidates = async() => {
-    const candidates = await db('candidate').join('party','candidate.candidate_party_id','=','party.party_id').select('candidate.candidate_id','candidate.candidate_fname','candidate.candidate_lname','party.party_name').where('allow_vote',true);
+    const candidates = await db('candidate').join('party','candidate.candidate_party_id','=','party.party_id').select('candidate.candidate_id','candidate.candidate_fname','candidate.candidate_lname','party.party_name').where('is_eligible',true);
     return candidates;
 }
 
