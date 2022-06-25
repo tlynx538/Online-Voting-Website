@@ -63,14 +63,15 @@ const getVote = async(req,res) => {
 const signIn = async(req,res) => {
     var flag = true;
     const userDetails = await retrieveVoterDetails();
-    const candidateDetails = await retrieveAllCandidates();
     for(var element in userDetails)
     {
         if(userDetails[element].voter_username == req.body.voterUserName)
         {
             if(userDetails[element].voter_password == req.body.voterPassword)
             {
-                console.log("inside the main condition")
+                console.log("inside the main condition");
+                const candidateDetails = await retrieveAllCandidates(userDetails[element].voter_area_code_id);
+                console.log(candidateDetails);
                 req.session.user = userDetails[element].voter_id;
                 area_code_local = await retrieveAreaCodebyId(userDetails[element].voter_area_code_id);
                 console.log("reached here 1");
@@ -135,8 +136,8 @@ const retrieveVoterDetails = async() => {
     return userDetails;
 }
 
-const retrieveAllCandidates = async() => {
-    const candidates = await db('candidate').join('party','candidate.candidate_party_id','=','party.party_id').select('candidate.candidate_id','candidate.candidate_fname','candidate.candidate_lname','party.party_name').where('is_eligible',true);
+const retrieveAllCandidates = async(area_code_id) => {
+    const candidates = await db('candidate').join('party','candidate.candidate_party_id','=','party.party_id').where('candidate_area_code_id',area_code_id).select('candidate.candidate_id','candidate.candidate_fname','candidate.candidate_lname','party.party_name').where('is_eligible',true);
     return candidates;
 }
 
