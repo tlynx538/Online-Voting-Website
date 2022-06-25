@@ -23,7 +23,7 @@ const startElection = async(req,res) => {
         console.log("election record updated");
         console.log(result);
         // update all voters eligible
-        const result2 = await db('voter').where({allow_vote: false}).update({allow_vote: true});
+        const result2 = await db('voter').where({allow_vote: false}).update({allow_vote: true,has_voted: false});
         console.log("updated all voters to be eligible");
         console.log(result2);
         res.render('../views/admin/election/setup',{election_status: true});
