@@ -1,10 +1,11 @@
 extends layout
 
 block content 
-        div(class="container-fluid p-3")
-            div(class="container p-2")
-                if results.length
-                    h3 Election Results
+        div(class="container p-4")
+            if results.length
+                h3 Election Results
+                hr
+                div(class="container p-2")
                     table(class="table")
                         thead
                             tr 
@@ -19,6 +20,6 @@ block content
                                     td #{item.candidate_fname} #{item.candidate_lname}
                                     td #{item.candidate_area_code_name}
                                     td #{item.candidate_vote_count}
-                else 
-                    h3 Election Currently In Progress 
+            else 
+                h3 Election Currently In Progress 
                 

@@ -5,5 +5,7 @@ router.get('/election/setup',adminControllers.electionControl);
 router.get('/election/setup/start',adminControllers.startElection);
 router.get('/election/setup/stop',adminControllers.endElection);
 router.get('/election/results',adminControllers.electionResultView);
+router.get('/accounts/voters',adminControllers.getVoterAuthPage);
+router.get('/accounts/candidates',adminControllers.getCandidateAuthPage);
 router.get('/seed',adminControllers.seed);
 module.exports = router;

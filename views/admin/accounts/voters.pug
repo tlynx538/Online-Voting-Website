@@ -1,0 +1,24 @@
+extends ../layout
+
+block content 
+        div(class="container p-4")
+            h3 Account Management for Voters
+            hr
+            div(class="container p-3") 
+                table(class="table")
+                    thead
+                        tr 
+                            th(scope="col") Name 
+                            th(scope="col") Username 
+                            th(scope="col") Password 
+                            th(scope="col") Update 
+                            th(scope="col") Delete 
+                        tbody 
+                            each item in voter_details
+                                tr 
+                                    th(scope="row") #{item.voter_fname} #{item.voter_lname}
+                                    td: input(type="text" class="form-control" value=`${item.voter_username}` name="username")
+                                    td: input(type="text" class="form-control" value=`${item.voter_password}` name="password")
+                                    td: button(class="btn btn-outline-warning") Update 
+                                    td: button(class="btn btn-outline-danger") Delete 
+                    

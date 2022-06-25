@@ -29,28 +29,36 @@ const postSignUp = async(req,res) => {
 }
 const getVote = async(req,res) => {
     // check if election is active 
-    const result = await db('election_record').select('is_active');
-    if(result[0].is_active)
+    try 
     {
-        // retrieve candidate id [v]
-        console.log(req.params.candidate_id);
-        console.log(req.session.user);
-        // add vote to voting record [v]
-        // needs try/catch
-        const results = await db('voting_record').insert({
-            time_of_vote: new Date(),
-            voter_id : req.session.user,
-            candidate_id : req.params.candidate_id,
-            record_id : 1
-        }).returning('*');
-        // update has_voted in voter
-        const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
-        console.log(result2);
-        // redirect to already voted page or error.pug 
-        res.render('../views/voters/error.pug',{message: "You've already voted"});
+        const result = await db('election_record').select('is_active');
+        if(result[0].is_active)
+        {
+            // retrieve candidate id [v]
+            console.log(req.params.candidate_id);
+            console.log(req.session.user);
+            // add vote to voting record [v]
+            // needs try/catch
+            const results = await db('voting_record').insert({
+                time_of_vote: new Date(),
+                voter_id : req.session.user,
+                candidate_id : req.params.candidate_id,
+                record_id : 1
+            }).returning('*');
+            // update has_voted in voter
+            const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
+            console.log(result2);
+            // redirect to already voted page or error.pug 
+            res.render('../views/voters/error.pug',{message: "You've already voted"});
+        }
+        else 
+            res.render('../views/voters/error.pug',{message: "The election is inactive"});
     }
-    else 
-    res.render('../views/voters/error.pug',{message: "The election is inactive"});
+    catch(err)
+    {
+        console.log(err);
+        res.send("Some error has occured");
+    }
 }
 const signIn = async(req,res) => {
     var flag = true;
@@ -134,9 +142,17 @@ const retrieveAllCandidates = async() => {
 
 
 const hasVoted = async(voter_id) => {
-    const voting_details = await db('voter').select('voter_id','has_voted').where('voter_id',voter_id);
-    if(voting_details[0].has_voted == false)
-        return false; 
-    else 
-        return true;
+    try 
+    {
+        const voting_details = await db('voter').select('voter_id','has_voted').where('voter_id',voter_id);
+        if(voting_details[0].has_voted == false)
+            return false; 
+        else 
+            return true;
+    }
+    catch(err)
+    {
+        console.log(err);
+        res.send("An error has occured");
+    }
 }

@@ -1,13 +1,13 @@
 extends ../layout
 
 block content 
-        div(class="container-fluid p-3")
-            h1 Election Control
+        div(class="container p-4")
+            h3 Election Control
             hr 
             div(class="container-fluid d-flex") 
                 div(class="row mt-2")
                     div(class="row p-2")
-                        h3 Initialize Elections
+                        h5 Initialize Elections
                     div(class="row p-2")
                         div(class="container")
                             if election_status
@@ -17,11 +17,12 @@ block content
                                 a(class="btn btn-success", href="/admin/election/setup/start") Start 
                                 a(class="btn btn-danger disabled") Stop
                     div(class="row p-2 mt-3")
-                        h4 Current Status 
+                        h6 Current Status 
                         if election_status
                             p(class="text-success") Election In Progress
                         else 
-                            p(class="text-primary") Election is Stopped or has not Started 
-                    div(class="row p-2")
-                        h4 Current Vote Count 
-                        p 50
+                            p(class="text-primary") Election is Stopped or has not Started
+                    if voter_count 
+                        div(class="row p-2")
+                            h6 Current Vote Count 
+                            p #{voter_count}

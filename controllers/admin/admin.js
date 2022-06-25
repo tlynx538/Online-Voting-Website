@@ -1,14 +1,16 @@
 const db = require('../../knex/knex')
-const homePage = (req,res) => {
-    res.render('../views/admin/home');
+const homePage = async(req,res) => {
+    const result = await homeGeneralStatistics();
+    res.render('../views/admin/home',{stats: result});
 }
 const electionControl = async(req,res) => {
+    const eligible_voter_count = await db('voter').count('voter_id').where('has_voted',true).andWhere('allow_vote',true).returning('*');
     // if start_time present then status false else true
     const result = await db('election_record').select('is_active');
     if(result[0].is_active)
-        res.render('../views/admin/election/setup',{election_status: true});
+        res.render('../views/admin/election/setup',{election_status: true,voter_count: eligible_voter_count[0].count});
     else 
-        res.render('../views/admin/election/setup',{election_status: false});
+        res.render('../views/admin/election/setup',{election_status: false,voter_count: eligible_voter_count[0].count});
 }
 
 const startElection = async(req,res) => {
@@ -90,6 +92,23 @@ const electionResultView = async(req,res) => {
     }
 }
 
+const getVoterAuthPage = async(req,res) => {
+    // get all voters
+    const voters = await getAllVoterDetails();
+    console.log(voters);
+    // render the page 
+    res.render('../views/admin/accounts/voters',{voter_details: voters});
+}
+
+const getCandidateAuthPage = async(req,res) => {
+    // get all candidates
+    const candidates = await getAllCandidateDetails();
+    console.log(candidates); 
+    // render the page 
+    res.render('../views/admin/accounts/candidates',{candidate_details: candidates});
+}
+
+
 const seed = async (req,res) => {
     try 
     {
@@ -108,7 +127,38 @@ const seed = async (req,res) => {
         res.send("An error has occured:" + err);
     }
 }
-module.exports = {homePage,seed,electionControl,startElection,endElection,electionResultView};
+module.exports = {homePage, seed, electionControl, startElection, endElection, electionResultView, getVoterAuthPage, getCandidateAuthPage};
+
+const homeGeneralStatistics = async() => {
+    const voter_count = await db('voter').count('voter_id').returning('*');
+    const candidate_count = await db('candidate').count('candidate_id').returning('*');
+    const party_count = await db('party').count('party_id').returning('*');
+    const area_count = await db('area_codes').count('area_code_id').returning('*');
+    const eligible_voter_count = await db('voter').count('voter_id').where('has_voted',true).returning('*');
+    const voting_duration = await db('election_record').where('record_id',1).select('start_time','end_time').returning('*');
+    const timediff = timeDifference(voting_duration[0].end_time,voting_duration[0].start_time);
+
+    const result = {
+        voters: voter_count[0].count,
+        candidates: candidate_count[0].count,
+        duration: timediff,
+        eligible: eligible_voter_count[0].count,
+        parties: party_count[0].count, 
+        areas: area_count[0].count
+    }
+    return result;
+}
+
+
+const getAllVoterDetails = async(req,res) => {
+    const voters = await db('voter').select('*').returning('*');
+    return voters;
+}
+
+const getAllCandidateDetails = async(req,res) => {
+    const candidates = await db('candidate').select('*').returning('*');
+    return candidates;
+}
 
 function GetSortOrder(prop) {    
     return function(a, b) {    
@@ -120,3 +170,26 @@ function GetSortOrder(prop) {
         return 0;    
     }    
 } 
+
+function timeDifference(date1,date2) {
+    var difference = date1.getTime() - date2.getTime();
+
+    var daysDifference = Math.floor(difference/1000/60/60/24);
+    difference -= daysDifference*1000*60*60*24
+
+    var hoursDifference = Math.floor(difference/1000/60/60);
+    difference -= hoursDifference*1000*60*60
+
+    var minutesDifference = Math.floor(difference/1000/60);
+    difference -= minutesDifference*1000*60
+
+    var secondsDifference = Math.floor(difference/1000);
+
+    const timediff = {
+        days: daysDifference,
+        hours: hoursDifference,
+        mins: minutesDifference,
+        secs: secondsDifference
+    }
+    return timediff;
+}
