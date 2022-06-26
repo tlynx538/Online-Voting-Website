@@ -32,32 +32,35 @@ const getVote = async(req,res) => {
     try 
     {
         const result = await db('election_record').select('is_active');
-        if(result[0].is_active)
+        const result3 = await db('voter').select('has_voted').where({voter_id: req.session.user});
+        if(!result[0].is_active)
+            res.render('../views/voters/error.pug',{message: "The election is inactive at the moment"});
+        else 
         {
-            // retrieve candidate id [v]
-            console.log(req.params.candidate_id);
-            console.log(req.session.user);
-            // add vote to voting record [v]
-            // needs try/catch
-            const results = await db('voting_record').insert({
-                time_of_vote: new Date(),
-                voter_id : req.session.user,
-                candidate_id : req.params.candidate_id,
-                record_id : 1
-            }).returning('*');
-            // update has_voted in voter
-            const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
-            console.log(result2);
-            // redirect to already voted page or error.pug 
+            if(result[0].is_active && !result3[0].has_voted)
+            {
+                // retrieve candidate id [v]
+                console.log(req.params.candidate_id);
+                console.log(req.session.user);
+                // add vote to voting record [v]
+                // needs try/catch
+                const results = await db('voting_record').insert({
+                    time_of_vote: new Date(),
+                    voter_id : req.session.user,
+                    candidate_id : req.params.candidate_id,
+                    record_id : 1
+                }).returning('*');
+                // update has_voted in voter
+                const result2 = await db('voter').where({voter_id: req.session.user}).update({has_voted: true});
+                console.log(result2);
+            }
             res.render('../views/voters/error.pug',{message: "You've already voted"});
         }
-        else 
-            res.render('../views/voters/error.pug',{message: "The election is inactive"});
     }
     catch(err)
     {
         console.log(err);
-        res.send("Some error has occured");
+        res.render('../views/voters/error.pug',{message: "Looks like you've already voted or you've not signed in"});
     }
 }
 const signIn = async(req,res) => {
@@ -74,20 +77,18 @@ const signIn = async(req,res) => {
                 console.log(candidateDetails);
                 req.session.user = userDetails[element].voter_id;
                 area_code_local = await retrieveAreaCodebyId(userDetails[element].voter_area_code_id);
-                console.log("reached here 1");
+                const result2 = await db('election_record').select('is_active');
+                if(!result2[0].is_active)
+                    res.render('../views/voters/error.pug',{message: "The election is inactive at the moment"});
                 if(await hasVoted(req.session.user))
                 {
-                    console.log("reached here 2");
                     flag = false;
                     res.render('../views/voters/error.pug',{message: "You've already voted"});
                 }
                 else 
                 {
-                    console.log("reached here 3")
                     try 
                     {
-                        console.log("candidate details: ");
-                        console.log(candidateDetails);
                         flag = false;
                         res.render('../views/voters/voting_page',{area_code_name: area_code_local, candidate_details: candidateDetails});
                     }
