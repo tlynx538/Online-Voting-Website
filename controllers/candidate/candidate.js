@@ -11,25 +11,30 @@ const postSignUp = async(req,res) => {
         const results = await db('candidate').insert({
             candidate_fname: req.body.candidate_fname,
             candidate_lname: req.body.candidate_lname,
+            candidate_username: req.body.user_name,
+            candidate_password: req.body.pass_word,
             candidate_age: req.body.candidate_age,
             candidate_party_id: req.body.candidate_party_id,
             candidate_address: req.body.candidate_address,
             candidate_area_code_id: req.body.candidate_area_code_id,
             candidate_phone:  req.body.candidate_phone,
-            candidate_sex: req.body.candidate_sex
+            candidate_sex: req.body.candidate_sex,
+            is_eligible: true 
         }).returning("*");
         console.log(results);
+        res.render('../views/index.pug',{message: "User Created Successfully"});
     }
     catch(err)
     {
         res.send("An error has occurred"+'\n'+err);
         console.log(err);
     }
-    res.send("Data submitted successfully");
 }
 
 const postSignIn = async(req,res) => {
     console.log(req.body);
+    console.log("reached here 1");
+    flag = true;
     const userDetails = await retrieveUserDetails();
     for(var element in userDetails)
     {
@@ -37,16 +42,17 @@ const postSignIn = async(req,res) => {
         {
             if(userDetails[element].candidate_password == req.body.candidatePassword)
             {
+                console.log("reached here 2");
+                flag = false;
                 req.session.user = userDetails[element].candidate_id;
                 res.render('../views/candidates/candidate_page',{candidate_fname:userDetails[element].candidate_fname,candidate_lname:userDetails[element].candidate_lname});
             }
-            else 
-            {
-                res.status(403).render('../views/index.pug',{errors: "Username or Password seems to be incorrect, please check once."});
-            }
         }
-        else 
-            res.render('../views/index.pug');
+    }
+    if(flag)
+    {
+            console.log("reached here 3");
+            res.status(403).render('../views/index.pug',{errors: "Username or Password seems to be incorrect, please check once."});
     }
 }
 

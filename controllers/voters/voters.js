@@ -10,6 +10,8 @@ const postSignUp = async(req,res) => {
         const results = await db('voter').insert({
             voter_fname: req.body.voter_fname,
             voter_lname: req.body.voter_lname,
+            voter_username: req.body.user_name,
+            voter_password: req.body.pass_word,
             voter_age: req.body.voter_age,
             voter_address: req.body.voter_address,
             voter_area_code_id: req.body.voter_area_code_id,
@@ -19,13 +21,13 @@ const postSignUp = async(req,res) => {
             allow_vote : false  
         }).returning("*");
         console.log(results);
+        res.render('../views/index.pug',{message: "User Created Successfully"});
     }
     catch(err)
     {
         res.send("An error has occurred"+'\n'+err);
         console.log(err);
     }
-    res.send("Data submitted successfully");
 }
 const getVote = async(req,res) => {
     // check if election is active 

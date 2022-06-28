@@ -10,6 +10,9 @@ block content
                     b An error occurred
                     | 
                     p #{errors}
+            if message 
+                div(class="alert alert-primary" role="alert")
+                    b #{message}
             div(class="row")
                 div(class="p-3 col")
                     form(method="POST",action="/voters/signin",class="form-signup")
