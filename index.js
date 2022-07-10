@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+const port = 8080;
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const path = require('path');
 const db = require('./knex/knex');
 const sessions = require('express-session');
+
+
 const voterRoutes = require('./routes/voters');
 const candidateRouter = require('./routes/candidates');
 const adminRouter = require('./routes/admin');
@@ -19,8 +21,9 @@ app.use(sessions({
   cookie: {maxAge: oneDay}
 }))
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({ extended:false }));
+//app.use(express.bodyParser({limit: '50mb'}));
 app.use(cookieParser());
 app.use(morgan('combined'));
 app.use("/public", express.static(path.join(__dirname, 'public')));

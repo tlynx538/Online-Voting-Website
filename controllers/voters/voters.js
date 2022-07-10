@@ -1,9 +1,14 @@
 const db = require('../../knex/knex');
-var area_code_local;
+const fs = require('fs');
+const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const axios = require('axios');
+
+
 const getSignUp = async(req,res) => {
     const area_details = await retrieveAllAreaCodes();
     res.render('../views/voters/sign_up',{area:area_details});
 }
+
 const postSignUp = async(req,res) => {
     try 
     {
@@ -29,6 +34,30 @@ const postSignUp = async(req,res) => {
         console.log(err);
     }
 }
+const getImagesUpload = async(req,res) => {
+    console.log(req.session.user);
+    res.render('../views/voters/images_upload.pug');
+}
+
+const postImageUpload = async(req,res) => {
+    var base64data = req.body["photo"].replace(/^data:image\/png;base64,/, "");
+    var buffer = Buffer.from(base64data,'base64');
+    const file_name = (generateString(7)+'.png').trim();
+    console.log(file_name);
+    fs.writeFileSync('face-recognition-microservice/unknown_faces/'+file_name, buffer);
+    await axios.get(`http://127.0.0.1:8000/${file_name}/${req.session.user}`).then(function(response){
+        if(response.data.results)
+            res.send("x");
+        else
+            res.send("y");
+    });
+}
+
+const getVotingPage = async(req,res) =>{
+    console.log("reached here");
+    res.render('../views/voters/voting_page',{area_code_name: voter.getAreaCodeDetails, candidate_details: voter.getCandidateDetails});
+}
+
 const getVote = async(req,res) => {
     // check if election is active 
     try 
@@ -65,6 +94,7 @@ const getVote = async(req,res) => {
         res.render('../views/voters/error.pug',{message: "Looks like you've already voted or you've not signed in"});
     }
 }
+
 const signIn = async(req,res) => {
     var flag = true;
     const userDetails = await retrieveVoterDetails();
@@ -79,6 +109,11 @@ const signIn = async(req,res) => {
                 console.log(candidateDetails);
                 req.session.user = userDetails[element].voter_id;
                 area_code_local = await retrieveAreaCodebyId(userDetails[element].voter_area_code_id);
+
+                // using setters to set the variables
+                voter.candidateDetails = candidateDetails; 
+                voter.areaCodeDetails = area_code_local;
+
                 const result2 = await db('election_record').select('is_active');
                 if(!result2[0].is_active)
                     res.render('../views/voters/error.pug',{message: "The election is inactive at the moment"});
@@ -92,7 +127,7 @@ const signIn = async(req,res) => {
                     try 
                     {
                         flag = false;
-                        res.render('../views/voters/voting_page',{area_code_name: area_code_local, candidate_details: candidateDetails});
+                        res.redirect('/voters/upload/images');
                     }
                     catch(err)
                     {
@@ -123,7 +158,7 @@ const logout = (req,res) => {
       });
 }
 
-module.exports = {getSignUp,signIn, postSignUp,getVote,logout};
+module.exports = {getSignUp,signIn, postSignUp,getVote,logout, getImagesUpload,postImageUpload, getVotingPage};
 
 const retrieveAreaCodebyId = async(area_code_id) => {
     const area_code = await db('area_codes').select('area_code_id','area_code_name').where('area_code_id',area_code_id);
@@ -144,6 +179,22 @@ const retrieveAllCandidates = async(area_code_id) => {
     return candidates;
 }
 
+const voter = {
+    candidateDetails : [],
+    area_code_details : [],
+    set changeCandidateDetails(newCandidateDetails){
+        this.candidateDetails = newCandidateDetails;
+    },
+    set areaCodeDetails(newAreaCodeDetails){
+        this.area_code_details = newAreaCodeDetails;
+    },
+    get getCandidateDetails(){
+        return this.candidateDetails;
+    },
+    get getAreaCodeDetails(){
+        return this.area_code_details;
+    }
+}
 
 const hasVoted = async(voter_id) => {
     try 
@@ -159,4 +210,14 @@ const hasVoted = async(voter_id) => {
         console.log(err);
         res.send("An error has occured");
     }
+}
+
+function generateString(length) {
+    let result = ' ';
+    const charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
 }
