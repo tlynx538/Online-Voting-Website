@@ -29,7 +29,7 @@ const postSignUp = async(req,res) => {
     }
     catch(err)
     {
-        res.send("An error has occurred"+'\n'+err);
+        res.render('../views/voters/error.pug',{message: "Please check the details before entering."});
         console.log(err);
     }
 }
@@ -105,7 +105,7 @@ const getVote = async(req,res) => {
 }
 
 const signIn = async(req,res) => {
-    var flag = true;
+    var flag = false;
     const userDetails = await retrieveVoterDetails();
     for(var element in userDetails)
     {
@@ -124,26 +124,31 @@ const signIn = async(req,res) => {
                 req.session.areaCodeDetails = area_code_local;
 
                 const result2 = await db('election_record').select('is_active');
-                if(!result2[0].is_active)
-                    res.render('../views/voters/error.pug',{message: "The election is inactive at the moment"});
-                if(await hasVoted(req.session.user))
+                if(result2[0].is_active)
                 {
-                    flag = false;
-                    res.render('../views/voters/error.pug',{message: "You've already voted"});
+                    if(await hasVoted(req.session.user))
+                    {
+                        flag = false;
+                        res.render('../views/voters/error.pug',{message: "You've already voted"});
+                    }
+                    else 
+                    {
+                        try 
+                        {
+                            flag = false;
+                            res.render('../views/voters/images_upload.pug');
+                        }
+                        catch(err)
+                        {
+                            console.log(err);
+                            res.send("Some error detected");
+                        }
+                    }
                 }
                 else 
                 {
-                    try 
-                    {
-                        flag = false;
-                        res.redirect('/voters/upload/images');
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                        res.send("Some error detected");
-                    }
-
+                    flag = false;
+                    res.render('../views/voters/error.pug',{message: "The election is inactive at the moment"});   
                 }
             }
         }
@@ -211,6 +216,7 @@ const hasVoted = async(voter_id) => {
     try 
     {
         const voting_details = await db('voter').select('voter_id','has_voted').where('voter_id',voter_id);
+        console.log(voting_details);
         if(voting_details[0].has_voted == false)
             return false; 
         else 

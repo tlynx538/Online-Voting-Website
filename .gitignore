@@ -3,3 +3,5 @@ node_modules/
 erd-diagram/
 face-recognition-microservice/__pycache__
 face-recognition-microservice/fastapi-env
+voting-db-query.sql
+knex/knexfile.js
