@@ -1,6 +1,5 @@
 const db = require('../../knex/knex');
 const fs = require('fs');
-const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const axios = require('axios');
 
 
@@ -54,8 +53,18 @@ const postImageUpload = async(req,res) => {
 }
 
 const getVotingPage = async(req,res) =>{
-    console.log("reached here");
-    res.render('../views/voters/voting_page',{area_code_name: voter.getAreaCodeDetails, candidate_details: voter.getCandidateDetails});
+    try 
+    {
+        if(req.session.user)
+            res.render('../views/voters/voting_page',{area_code_name: req.session.areaCodeDetails, candidate_details: req.session.candidateDetails});
+        else 
+            res.render('../views/voters/error.pug',{message: "Access Denied."});
+    }
+    catch(err)
+    {
+        console.log(err);
+        res.send(err);
+    }
 }
 
 const getVote = async(req,res) => {
@@ -110,9 +119,9 @@ const signIn = async(req,res) => {
                 req.session.user = userDetails[element].voter_id;
                 area_code_local = await retrieveAreaCodebyId(userDetails[element].voter_area_code_id);
 
-                // using setters to set the variables
-                voter.candidateDetails = candidateDetails; 
-                voter.areaCodeDetails = area_code_local;
+                // using session to set the variables
+                req.session.candidateDetails = candidateDetails; 
+                req.session.areaCodeDetails = area_code_local;
 
                 const result2 = await db('election_record').select('is_active');
                 if(!result2[0].is_active)
@@ -179,22 +188,24 @@ const retrieveAllCandidates = async(area_code_id) => {
     return candidates;
 }
 
-const voter = {
-    candidateDetails : [],
-    area_code_details : [],
-    set changeCandidateDetails(newCandidateDetails){
-        this.candidateDetails = newCandidateDetails;
-    },
-    set areaCodeDetails(newAreaCodeDetails){
-        this.area_code_details = newAreaCodeDetails;
-    },
-    get getCandidateDetails(){
-        return this.candidateDetails;
-    },
-    get getAreaCodeDetails(){
-        return this.area_code_details;
-    }
-}
+
+// Below Implementation is Unsafe, using Session Storage to replace storage of variables
+// const voter = {
+//     candidateDetails : [],
+//     area_code_details : [],
+//     set changeCandidateDetails(newCandidateDetails){
+//         this.candidateDetails = newCandidateDetails;
+//     },
+//     set areaCodeDetails(newAreaCodeDetails){
+//         this.area_code_details = newAreaCodeDetails;
+//     },
+//     get getCandidateDetails(){
+//         return this.candidateDetails;
+//     },
+//     get getAreaCodeDetails(){
+//         return this.area_code_details;
+//     }
+// }
 
 const hasVoted = async(voter_id) => {
     try 
@@ -213,6 +224,7 @@ const hasVoted = async(voter_id) => {
 }
 
 function generateString(length) {
+    const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = ' ';
     const charactersLength = characters.length;
     for ( let i = 0; i < length; i++ ) {
