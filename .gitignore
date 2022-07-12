@@ -5,11 +5,6 @@ face-recognition-microservice/__pycache__
 face-recognition-microservice/fastapi-env
 face-recognition-microservice/known_faces/*
 face-recognition-microservice/unknown_faces/*
-<<<<<<< HEAD
 !face-recognition-microservice/known_faces/.gitkeep
 !face-recognition-microservice/unknown_faces/.gitkeep 
-=======
-!face-recognition-microservice/known_faces
-!face-recognition-microservice/unknown_faces
->>>>>>> parent of 5034700 (added back images :/)
 voting-db-query.sql
