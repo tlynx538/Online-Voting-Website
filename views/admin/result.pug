@@ -1,0 +1,25 @@
+extends layout
+
+block content 
+        div(class="container p-4")
+            if results.length
+                h3 Election Results
+                hr
+                div(class="container p-2")
+                    table(class="table")
+                        thead
+                            tr 
+                                th(scope="col") Party Name 
+                                th(scope="col") Candidate Name 
+                                th(scope="col") Area Code 
+                                th(scope="col") Count
+                        tbody
+                            each item in results  
+                                tr 
+                                    th(scope="row") #{item.candidate_party_name}  
+                                    td #{item.candidate_fname} #{item.candidate_lname}
+                                    td #{item.candidate_area_code_name}
+                                    td #{item.candidate_vote_count}
+            else 
+                h3 Election Currently In Progress 
+                
