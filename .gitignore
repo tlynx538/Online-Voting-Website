@@ -3,8 +3,8 @@ node_modules/
 erd-diagram/
 face-recognition-microservice/__pycache__
 face-recognition-microservice/fastapi-env
-face-recognition-microservice/known_faces/*
-face-recognition-microservice/unknown_faces/*
+face-recognition-microservice/known_faces
+face-recognition-microservice/unknown_faces
 !face-recognition-microservice/known_faces
 !face-recognition-microservice/unknown_faces
 voting-db-query.sql
