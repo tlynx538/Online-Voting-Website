@@ -11,21 +11,30 @@ const getSignUp = async(req,res) => {
 const postSignUp = async(req,res) => {
     try 
     {
-        const results = await db('voter').insert({
-            voter_fname: req.body.voter_fname,
-            voter_lname: req.body.voter_lname,
-            voter_username: req.body.user_name,
-            voter_password: req.body.pass_word,
-            voter_age: req.body.voter_age,
-            voter_address: req.body.voter_address,
-            voter_area_code_id: req.body.voter_area_code_id,
-            voter_phone:  req.body.voter_phone,
-            voter_sex: req.body.voter_sex,
-            has_voted : false,
-            allow_vote : false  
-        }).returning("*");
-        console.log(results);
-        res.render('../views/index.pug',{message: "User Created Successfully"});
+        // validation section
+        let age = parseInt(req.body.age); 
+        if(age >= 0 && age <= 18)
+        {
+            res.render('../views/voters/error.pug',{message : "It looks like you're ineligible to vote at this time."});
+        }
+        else 
+        {
+            const results = await db('voter').insert({
+                voter_fname: req.body.voter_fname,
+                voter_lname: req.body.voter_lname,
+                voter_username: req.body.user_name,
+                voter_password: req.body.pass_word,
+                voter_age: req.body.voter_age,
+                voter_address: req.body.voter_address,
+                voter_area_code_id: req.body.voter_area_code_id,
+                voter_phone:  req.body.voter_phone,
+                voter_sex: req.body.voter_sex,
+                has_voted : false,
+                allow_vote : false  
+            }).returning("*");
+            console.log(results);
+            res.render('../views/index.pug',{message: "User Created Successfully"});
+        }
     }
     catch(err)
     {
@@ -44,12 +53,20 @@ const postImageUpload = async(req,res) => {
     const file_name = (generateString(7)+'.png').trim();
     console.log(file_name);
     fs.writeFileSync('face-recognition-microservice/unknown_faces/'+file_name, buffer);
-    await axios.get(`http://127.0.0.1:8000/${file_name}/${req.session.user}`).then(function(response){
-        if(response.data.results)
-            res.send("x");
-        else
-            res.send("y");
-    });
+    try
+    {
+        await axios.get(`http://127.0.0.1:8000/${file_name}/${req.session.user}`).then(function(response){
+            if(response.data.results)
+                res.send("x");
+            else
+                res.send("y");
+        });
+    }
+    catch(err)
+    {
+        console.log(err);
+        res.render('../views/voters/error.pug',{message: "An error occured, please check logs."});
+    }
 }
 
 const getVotingPage = async(req,res) =>{
