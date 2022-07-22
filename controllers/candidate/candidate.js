@@ -1,18 +1,26 @@
 const db = require('../../knex/knex');
+const bcrypt = require('bcrypt');
+const salt = bcrypt.genSaltSync(13);
+
+
 const getSignUp = async (req,res) => {
     const party_details = await retrieveAllPartyNames();
     const area_details = await retrieveAllAreaCodes();
     res.render('../views/candidates/sign_up',{party: party_details,area:area_details});
 }
 
-const postSignUp = async(req,res) => {
+const postSignUp = async(req,res) => {  
+    console.log("reached here");
     try 
     {
+        console.log("inside try block");
+        let hash = bcrypt.hashSync(req.body.pass_word,salt);
+        console.log(hash);
         const results = await db('candidate').insert({
             candidate_fname: req.body.candidate_fname,
             candidate_lname: req.body.candidate_lname,
             candidate_username: req.body.user_name,
-            candidate_password: req.body.pass_word,
+            candidate_password: hash,
             candidate_age: req.body.candidate_age,
             candidate_party_id: req.body.candidate_party_id,
             candidate_address: req.body.candidate_address,
@@ -36,11 +44,14 @@ const postSignIn = async(req,res) => {
     console.log("reached here 1");
     flag = true;
     const userDetails = await retrieveUserDetails();
+    console.log(req.body.candidatePassword);
     for(var element in userDetails)
     {
         if(userDetails[element].candidate_username == req.body.candidateUserName)
         {
-            if(userDetails[element].candidate_password == req.body.candidatePassword)
+            let result = bcrypt.compareSync(req.body.candidatePassword,userDetails[element].candidate_password)
+            console.log(result);
+            if(bcrypt.compareSync(req.body.candidatePassword,userDetails[element].candidate_password))
             {
                 console.log("reached here 2");
                 flag = false;

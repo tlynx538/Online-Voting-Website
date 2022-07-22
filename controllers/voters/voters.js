@@ -1,5 +1,7 @@
 const db = require('../../knex/knex');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
+const salt = bcrypt.genSaltSync(12);
 const axios = require('axios');
 
 
@@ -19,11 +21,12 @@ const postSignUp = async(req,res) => {
         }
         else 
         {
+            var hash = bcrypt.hashSync(req.body.pass_word,salt);
             const results = await db('voter').insert({
                 voter_fname: req.body.voter_fname,
                 voter_lname: req.body.voter_lname,
                 voter_username: req.body.user_name,
-                voter_password: req.body.pass_word,
+                voter_password: hash,
                 voter_age: req.body.voter_age,
                 voter_address: req.body.voter_address,
                 voter_area_code_id: req.body.voter_area_code_id,
@@ -128,7 +131,7 @@ const signIn = async(req,res) => {
     {
         if(userDetails[element].voter_username == req.body.voterUserName)
         {
-            if(userDetails[element].voter_password == req.body.voterPassword)
+            if(bcrypt.compareSync(req.body.voterPassword,userDetails[element].voter_password))
             {
                 console.log("inside the main condition");
                 const candidateDetails = await retrieveAllCandidates(userDetails[element].voter_area_code_id);

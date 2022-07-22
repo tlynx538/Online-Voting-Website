@@ -16,18 +16,18 @@ html
                     a(class="p-3 navbar-brand",href="/admin") Admin Panel 
                     button(class="navbar-toggler",type="button",data-bs-toggle="collapse",data-bs-target="#navbarSupportedContent",aria-controls="navbarSupportedContent",aria-expanded="false",aria-label="Toggle navigation")
                         span(class="navbar-toggler-icon")
+            //- div(class="p-2 col-xl-0")
+            //-   div(class="collapse navbar-collapse",id="navbarSupportedContent")
+            //-       ul(class="navbar-nav mr-auto")
+            //-           li(class="nav-item")
+            //-             a(class="nav-link",href='/admin/election/setup/') Election Controls
+            //-           li(class="nav-item")
+            //-             a(class="nav-link",href='/admin/election/results') Results 
+            //-           li(class="nav-item dropdown")
+            //-               a(class="nav-link dropdown-toggle",href="#",id="navbarDropdown",role="button",data-bs-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Accounts Control
+            //-               div(class="dropdown-menu",aria-labelledby="navbarDropdown")
+            //-                   a(class="dropdown-item",href="/admin/accounts/voters") Voters 
+            //-                   a(class="dropdown-item" href="/admin/accounts/candidates") Candidates
             div(class="p-2 col-xl-0")
-              div(class="collapse navbar-collapse",id="navbarSupportedContent")
-                  ul(class="navbar-nav mr-auto")
-                      li(class="nav-item")
-                        a(class="nav-link",href='/admin/election/setup/') Election Controls
-                      li(class="nav-item")
-                        a(class="nav-link",href='/admin/election/results') Results 
-                      li(class="nav-item dropdown")
-                          a(class="nav-link dropdown-toggle",href="#",id="navbarDropdown",role="button",data-bs-toggle="dropdown",aria-haspopup="true",aria-expanded="false") Accounts Control
-                          div(class="dropdown-menu",aria-labelledby="navbarDropdown")
-                              a(class="dropdown-item",href="/admin/accounts/voters") Voters 
-                              a(class="dropdown-item" href="/admin/accounts/candidates") Candidates
-            div(class="p-2 col-xl-0")
-                a(class="btn btn-outline-danger mr-2",href="/admin/logout") Logout
+                a(class="btn btn-warning mr-2",href="/") Exit
         block content
